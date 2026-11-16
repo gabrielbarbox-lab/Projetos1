@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14243a">
+<title>Atlas | Gestão de Estoque</title>
+<style>
+:root{
+  --bg:#f3f6fa;--surface:#fff;--surface-soft:#f7f9fc;--navy:#14243a;
+  --navy-2:#1d3553;--blue:#3167b1;--blue-soft:#eaf1fb;--text:#202b3a;
+  --muted:#6d7b8d;--line:#e2e8f0;--green:#16845b;--red:#c44747;
+  --shadow:0 8px 28px rgba(20,36,58,.07)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.topbar{background:var(--navy);color:#fff;padding:0 5%;height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:.2px}
+.brand-mark{width:38px;height:38px;border-radius:10px;background:#29496f;display:grid;place-items:center;font-size:19px}
+.brand small{display:block;color:#b9c9dc;font-size:11px;font-weight:500;letter-spacing:1.2px;margin-top:2px}
+.top-status{font-size:12px;color:#c8d6e5;display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;background:#52c59a;border-radius:50%}
+main{width:min(1120px,92%);margin:38px auto 60px}
+.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:25px}
+.eyebrow{font-size:11px;letter-spacing:1.5px;color:var(--blue);font-weight:800;text-transform:uppercase;margin:0 0 8px}
+h1{font-size:clamp(25px,4vw,34px);letter-spacing:-.8px;margin:0;color:var(--navy)}
+.subtitle{margin:8px 0 0;color:var(--muted);font-size:14px}
+.date-label{color:var(--muted);font-size:12px;white-space:nowrap}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.metric,.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.metric{padding:19px 21px;display:flex;align-items:center;gap:15px}
+.metric-icon{width:42px;height:42px;border-radius:11px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-size:19px}
+.metric-label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.metric-value{font-size:23px;font-weight:750;color:var(--navy);letter-spacing:-.4px}
+.content{display:grid;grid-template-columns:340px minmax(0,1fr);gap:18px;align-items:start}
+.panel{padding:23px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:19px}
+h2{font-size:16px;color:var(--navy);margin:0;font-weight:750}
+.panel-desc{font-size:12px;color:var(--muted);margin:6px 0 0}
+.field{margin:15px 0}
+label{display:block;font-size:12px;color:#46566a;font-weight:650;margin-bottom:7px}
+input{width:100%;height:42px;border:1px solid #d6dee8;border-radius:8px;padding:0 12px;background:#fff;color:var(--text);font-size:14px;outline:none;transition:.15s}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #3167b11c}
+input::placeholder{color:#a0acba}
+.primary{height:43px;width:100%;margin-top:5px;border:0;border-radius:8px;background:var(--blue);color:white;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+.primary:hover{background:#275894}
+.notice{font-size:12px;min-height:18px;margin:12px 0 0}
+.good{color:var(--green)}.bad{color:var(--red)}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.search-wrap{position:relative;flex:1}
+.search-wrap input{padding-left:36px}
+.search-icon{position:absolute;left:12px;top:12px;color:#8290a1;font-size:14px}
+.count-pill{background:var(--blue-soft);color:var(--blue);font-size:11px;font-weight:750;padding:7px 10px;border-radius:999px;white-space:nowrap}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left;min-width:480px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#78879a;font-weight:750;background:var(--surface-soft);padding:12px 10px}
+td{font-size:13px;padding:14px 10px;border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+.product-name{font-weight:650;color:var(--navy)}
+.price{font-weight:700;color:var(--green);white-space:nowrap}
+.quantity{font-weight:650}
+.remove{border:1px solid #f0d7d7;background:#fff7f7;color:var(--red);padding:7px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
+.remove:hover{background:#ffeded}
+.empty{text-align:center;padding:38px 12px;color:var(--muted);font-size:13px}
+.empty strong{display:block;color:var(--navy);margin-bottom:5px;font-size:14px}
+.footer{text-align:center;color:#8b98a8;font-size:11px;margin:22px 0}
+@media(max-width:850px){.content{grid-template-columns:1fr}.metrics{gap:10px}.metric{padding:15px}.metric-value{font-size:20px}}
+@media(max-width:560px){.topbar{height:66px;padding:0 4%}.top-status{font-size:0}.top-status .dot{width:8px;height:8px}.brand{font-size:14px}main{margin-top:27px}.page-heading{align-items:flex-start;flex-direction:column}.date-label{display:none}.metrics{grid-template-columns:1fr}.metric{padding:13px 16px}.metric-icon{width:38px;height:38px}.panel{padding:18px}.content{gap:13px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">▦</div>
+    <div>ATLAS <small>GESTÃO E CONTROLE</small></div>
+  </div>
+  <div class="top-status"><span class="dot"></span> Sistema operacional</div>
+</header>
+<main>
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow">Painel de controle</p>
+      <h1>Gestão de estoque</h1>
+      <p class="subtitle">Cadastre, consulte e acompanhe seus produtos em um só lugar.</p>
+    </div>
+    <div class="date-label" id="dataAtual"></div>
+  </section>
+
+  <section class="metrics" aria-label="Resumo do estoque">
+    <div class="metric"><div class="metric-icon">▤</div><div><div class="metric-label">Produtos cadastrados</div><div class="metric-value" id="totalProdutos">0</div></div></div>
+    <div class="metric"><div class="metric-icon">▦</div><div><div class="metric-label">Unidades em estoque</div><div class="metric-value" id="totalUnidades">0</div></div></div>
+    <div class="metric"><div class="metric-icon">R$</div><div><div class="metric-label">Valor total do estoque</div><div class="metric-value" id="valorEstoque">R$ 0,00</div></div></div>
+  </section>
+
+  <section class="content">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Novo produto</h2><p class="panel-desc">Informe os dados para cadastrar um item.</p></div></div>
+      <form id="formProduto">
+        <div class="field"><label for="nome">Nome do produto</label><input id="nome" type="text" placeholder="Ex.: Arroz tipo 1" maxlength="70" required></div>
+        <div class="field"><label for="preco">Preço unitário (R$)</label><input id="preco" type="number" min="0.01" step="0.01" placeholder="0,00" required></div>
+        <div class="field"><label for="quantidade">Quantidade disponível</label><input id="quantidade" type="number" min="0" step="1" value="1" required></div>
+        <button class="primary" type="submit">Cadastrar produto</button>
+        <p class="notice" id="mensagem" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><div><h2>Produtos cadastrados</h2><p class="panel-desc">Consulte e gerencie os itens registrados.</p></div></div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">⌕</span><input id="busca" type="search" placeholder="Buscar por nome do produto..." aria-label="Buscar produto"></div>
+        <span class="count-pill" id="contadorLista">0 itens</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Produto</th><th>Preço unitário</th><th>Quantidade</th><th>Ação</th></tr></thead>
+          <tbody id="listaProdutos"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="vazio"><strong>Nenhum produto encontrado</strong>Cadastre um produto ou ajuste sua busca.</div>
+    </section>
+  </section>
+  <p class="footer">ATLAS Gestão de Estoque · Os dados são armazenados localmente neste navegador.</p>
+</main>
+<script>
+const CHAVE="atlas-gestao-estoque-v1";
+let produtos=[];
+try{produtos=JSON.parse(localStorage.getItem(CHAVE)||"[]");if(!Array.isArray(produtos))produtos=[];}catch(e){produtos=[];}
+const el=id=>document.getElementById(id);
+const moeda=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+el("dataAtual").textContent=new Intl.DateTimeFormat("pt-BR",{dateStyle:"long"}).format(new Date());
+function salvar(){localStorage.setItem(CHAVE,JSON.stringify(produtos));}
+function atualizar(){
+ const termo=el("busca").value.trim().toLocaleLowerCase("pt-BR");
+ const filtrados=produtos.map((p,i)=>({...p,indice:i})).filter(p=>p.nome.toLocaleLowerCase("pt-BR").includes(termo));
+ el("totalProdutos").textContent=produtos.length;
+ el("totalUnidades").textContent=produtos.reduce((s,p)=>s+Number(p.quantidade||0),0);
+ el("valorEstoque").textContent=moeda(produtos.reduce((s,p)=>s+Number(p.preco||0)*Number(p.quantidade||0),0));
+ el("contadorLista").textContent=`${filtrados.length} ${filtrados.length===1?"item":"itens"}`;
+ const tbody=el("listaProdutos");tbody.replaceChildren();
+ el("vazio").style.display=filtrados.length?"none":"block";
+ filtrados.forEach(p=>{
+  const tr=document.createElement("tr");
+  const nome=document.createElement("td");nome.textContent=p.nome;nome.className="product-name";
+  const preco=document.createElement("td");preco.textContent=moeda(Number(p.preco));preco.className="price";
+  const qtd=document.createElement("td");qtd.textContent=p.quantidade;qtd.className="quantity";
+  const acao=document.createElement("td");const btn=document.createElement("button");
+  btn.textContent="Excluir";btn.className="remove";btn.setAttribute("aria-label",`Excluir ${p.nome}`);
+  btn.addEventListener("click",()=>{if(confirm(`Deseja excluir "${p.nome}" do estoque?`)){produtos.splice(p.indice,1);salvar();atualizar();}});
+  acao.appendChild(btn);tr.append(nome,preco,qtd,acao);tbody.appendChild(tr);
+ });
+}
+function mensagem(txt,ok){el("mensagem").textContent=txt;el("mensagem").className="notice "+(ok?"good":"bad");}
+el("formProduto").addEventListener("submit",e=>{
+ e.preventDefault();
+ const nome=el("nome").value.trim(),preco=Number(el("preco").value),quantidade=Number(el("quantidade").value);
+ if(!nome){mensagem("Informe o nome do produto.",false);return;}
+ if(!Number.isFinite(preco)||preco<=0){mensagem("O preço deve ser maior que zero.",false);return;}
+ if(!Number.isInteger(quantidade)||quantidade<0){mensagem("Informe uma quantidade inteira igual ou maior que zero.",false);return;}
+ produtos.push({nome,preco,quantidade});salvar();atualizar();el("formProduto").reset();el("quantidade").value=1;
+ mensagem("Produto cadastrado com sucesso.",true);
+});
+el("busca").addEventListener("input",atualizar);
+atualizar();
+</script>
+</body>
+</html>
